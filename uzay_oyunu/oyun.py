@@ -30,3 +30,6 @@ def galaksi_kur(gezegenler: list[str], baglantilar: dict[str, list[str]], baslan
         "yakit": yakit,
         **kwargs
     }
+def travel(galaksi: dict, planet: str) -> list[str]:
+    """Belirtilen gezegenden gidilebilecek bağlantılı gezegenlerin listesini döner."""
+    return galaksi["baglantilar"][planet]
