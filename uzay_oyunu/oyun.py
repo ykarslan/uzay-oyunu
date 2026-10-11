@@ -1,4 +1,5 @@
-#görev1 devamı
+import json
+
 def envanter_metni(credits: bool,engines: bool, copilot: bool)->str:
     """Sahip olunan esyaları listeler; hiçbiri yoksa boş metin döndürür."""
     esyalar = []
@@ -16,3 +17,16 @@ def hedef_menusu(hedefler: list[str]) -> str:
     for i, hedef in enumerate(hedefler, start=1):
          satirlar.append(f"[{i}] {hedef}")
     return "\n".join(satirlar)
+
+def galaksi_kur(gezegenler: list[str], baglantilar: dict[str, list[str]], baslangic: str, **kwargs) -> dict:
+    """Galaksi haritasını doğrular ve oyun başlangıç durumunu kurar."""
+    if baslangic not in gezegenler:
+        raise ValueError(f"Başlangıç gezegeni ({baslangic}) listede yok!")
+    yakit = kwargs.get("yakit", 50)
+    return {
+        "gezegenler": gezegenler,
+        "baglantilar": baglantilar,
+        "konum": baslangic,
+        "yakit": yakit,
+        **kwargs
+    }
