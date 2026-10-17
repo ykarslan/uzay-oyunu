@@ -4,10 +4,11 @@ import itertools
 from pathlib import Path
 import sys
 
+
 # Projenin kök dizinini Python arama yoluna dahil et
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from uzay_oyunu.akis import fibonacci
+from uzay_oyunu.akis import fibonacci, yakit_gostergesi
 
 
 def test_fibonacci():
@@ -31,3 +32,17 @@ def test_fibonacci():
     assert dilim_1 == [0, 1, 1, 2, 3]
     assert dilim_2 == [5, 8, 13, 21, 34]
     assert dilim_1 != dilim_2
+
+import pytest
+
+
+def test_yakit_gostergesi():
+    # 1. Örnek senaryo testi: 100 yakıt, 30 tüketim -> [70, 40, 10, 0]
+    assert list(yakit_gostergesi(100, 30)) == [70, 40, 10, 0]
+
+    # 2. next() ve StopIteration mekanizması testi
+    gosterge = yakit_gostergesi(20, 10)
+    assert next(gosterge) == 10
+    assert next(gosterge) == 0
+    with pytest.raises(StopIteration):
+        next(gosterge)
