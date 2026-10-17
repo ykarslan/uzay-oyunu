@@ -1,8 +1,8 @@
 """
 akis.py - Üreteçler ve veri akış boru hattı modülü.
 """
-from typing import Generator, Iterator, Tuple
-
+from typing import Callable, Dict, Generator, Iterator, List, Tuple
+from functools import lru_cache
 
 def fibonacci() -> Generator[int, None, None]:
     """
@@ -61,3 +61,17 @@ def uzun_yolculuklar(
     for kaynak, hedef, yakit in kayitlar:
         if yakit > esik:
             yield (kaynak, hedef, yakit)
+
+def rota_sayaci(baglantilar: Dict[str, List[str]]) -> Callable[[str, int], int]:
+    """
+    Gezegen bağlantılarını kullanarak verilen adımdaki rota sayısını hesaplayan
+    önbellekli (@lru_cache) fonksiyon üretir.
+    """
+    @lru_cache(maxsize=None)
+    def rota_sayisi(gezegen: str, adim: int) -> int:
+        if adim == 0:
+            return 1
+        komsular = baglantilar.get(gezegen, [])
+        return sum(rota_sayisi(komsu, adim - 1) for komsu in komsular)
+
+    return rota_sayisi

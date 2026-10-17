@@ -3,12 +3,12 @@
 import itertools
 from pathlib import Path
 import sys
-
+import json
 
 # Projenin kök dizinini Python arama yoluna dahil et
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from uzay_oyunu.akis import fibonacci, yakit_gostergesi
+from uzay_oyunu.akis import fibonacci, yakit_gostergesi, rota_sayaci
 
 
 def test_fibonacci():
@@ -46,3 +46,14 @@ def test_yakit_gostergesi():
     assert next(gosterge) == 0
     with pytest.raises(StopIteration):
         next(gosterge)
+
+def test_rota_sayaci():
+    galaksi_yolu = Path(__file__).resolve().parent.parent / "uzay_oyunu" / "galaksi.json"
+    with open(galaksi_yolu, "r", encoding="utf-8") as f:
+        galaksi = json.load(f)
+
+    say = rota_sayaci(galaksi["baglantilar"])
+
+    assert say("dünya", 3) == 9
+    assert say("dünya", 10) == 2185
+    assert say("dünya", 40) == 16832258606399
