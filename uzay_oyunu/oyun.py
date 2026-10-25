@@ -1,4 +1,5 @@
 import json
+from uzay_oyunu.dekoratorler import log_cagri
 
 def envanter_metni(credits: bool,engines: bool, copilot: bool)->str:
     """Sahip olunan esyaları listeler; hiçbiri yoksa boş metin döndürür."""
@@ -11,6 +12,9 @@ def envanter_metni(credits: bool,engines: bool, copilot: bool)->str:
         esyalar.append("yetenekli bir pilot")
 
     return f"Sende: {', '.join(esyalar)}" if esyalar else ""
+@log_cagri
+def hedef_menusu(hedefler: list[str]) -> str:
+    ...
 def hedef_menusu(hedefler: list[str]) -> str:
     """Gidilebilecek hedefleri numaralandırılmış metni menüsü olarak döndürür."""
     satirlar = ["Nereye gitmek istersin?"]
@@ -18,6 +22,9 @@ def hedef_menusu(hedefler: list[str]) -> str:
          satirlar.append(f"[{i}] {hedef}")
     return "\n".join(satirlar)
 
+@log_cagri
+def galaksi_kur(gezegenler: list[str], baglantilar: dict[str, list[str]], baslangic: str, **kwargs) -> dict:
+    ...
 def galaksi_kur(gezegenler: list[str], baglantilar: dict[str, list[str]], baslangic: str, **kwargs) -> dict:
     """Galaksi haritasını doğrular ve oyun başlangıç durumunu kurar."""
     if baslangic not in gezegenler:

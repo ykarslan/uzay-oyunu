@@ -1,6 +1,7 @@
 """
 test_dekoratorler.py - testler.
 """
+from uzay_oyunu.dekoratorler import sure_olc, say, log_cagri
 from uzay_oyunu.dekoratorler import sure_olc, say
 from pathlib import Path
 import sys
@@ -85,3 +86,17 @@ def test_say_dekoratoru_ve_sirasi():
 
     fib3(20)
     assert fib3.__wrapped__.cagri == 21
+
+    def test_log_cagri(capsys):
+        """Görev 3: log_cagri dekoratörünün giriş argümanlarını ve dönüş değerini doğru yazdırdığını test eder."""
+
+        @log_cagri
+        def yolculuk(hedef, hiz=1):
+            return f"{hedef} hiz={hiz}"
+
+        sonuc = yolculuk("orion", hiz=3)
+        assert sonuc == "orion hiz=3"
+
+        yakalanan = capsys.readouterr()
+        assert "-> yolculuk('orion', hiz=3)" in yakalanan.out
+        assert "<- yolculuk = 'orion hiz=3'" in yakalanan.out

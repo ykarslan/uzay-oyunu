@@ -32,3 +32,23 @@ def say(fonk):
 
     sarmalayici.cagri = 0
     return sarmalayici
+
+
+def log_cagri(fonk):
+    """
+    Her çağrıdan önce fonksiyon adını ve argümanlarını (konumsal ve adlı),
+    çağrıdan sonra ise dönüş değerini yazdırır.
+    """
+
+    @wraps(fonk)
+    def sarmalayici(*args, **kwargs):
+        konumsal = [repr(a) for a in args]
+        adli = [f"{k}={repr(v)}" for k, v in kwargs.items()]
+        tum_argumanlar = ", ".join(konumsal + adli)
+        print(f"-> {fonk.__name__}({tum_argumanlar})")
+
+        sonuc = fonk(*args, **kwargs)
+        print(f"<- {fonk.__name__} = {repr(sonuc)}")
+        return sonuc
+
+    return sarmalayici
