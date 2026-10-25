@@ -22,15 +22,13 @@ def sure_olc(fonk):
     return sarmalayici
 
 def say(fonk):
-    """
-    Fonksiyonun toplam çağrılma sayısını 'cagri' niteliğinde tutan dekoratör.
-    """
+    """Fonksiyonun kaç kez çağrıldığını sayan dekoratör."""
     @wraps(fonk)
     def sarmalayici(*args, **kwargs):
-        sarmalayici.cagri += 1
+        sarmalayici.cagri_sayisi += 1
         return fonk(*args, **kwargs)
 
-    sarmalayici.cagri = 0
+    sarmalayici.cagri_sayisi = 0
     return sarmalayici
 
 
@@ -52,3 +50,25 @@ def log_cagri(fonk):
         return sonuc
 
     return sarmalayici
+
+def sinirla(alt: float, ust: float):
+    """
+    Dekore edilen fonksiyonun ilk argümanının [alt, ust] aralığında olup olmadığını
+    denetleyen, aralık dışındaysa ValueError fırlatır.
+    """
+    def dekorator(fonk):
+        @wraps(fonk)
+        def sarmalayici(*args, **kwargs):
+            if args:
+                deger = args[0]
+            else:
+                # Argüman isimli (keyword) olarak geçildiyse ilk parametreyi al
+                deger = next(iter(kwargs.values()))
+
+            if not (alt <= deger <= ust):
+                raise ValueError(f"{fonk.__name__}: {deger} değeri {alt}-{ust} aralığında değil")
+            return fonk(*args, **kwargs)
+
+        return sarmalayici
+
+    return dekorator

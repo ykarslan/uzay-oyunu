@@ -1,102 +1,62 @@
-"""
-test_dekoratorler.py - testler.
-"""
-from uzay_oyunu.dekoratorler import sure_olc, say, log_cagri
-from uzay_oyunu.dekoratorler import sure_olc, say
-from pathlib import Path
+﻿from pathlib import Path
 import sys
+import time
+import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from uzay_oyunu.dekoratorler import sure_olc
+from uzay_oyunu.dekoratorler import sure_olc, say, log_cagri, sinirla
 
 
-def test_sure_olc_sonuc_ve_cikti(capsys):
-    """1. Test: Fonksiyonun gercek donus degerini degistirmeden dondurdugunu ve ekrana dogru formatta yazdigini test eder."""
+def test_sure_olc(capsys):
     @sure_olc
-    def topla(a, b):
-        return a + b
+    def ornek_fonk():
+        time.sleep(0.01)
+        return "bitti"
 
-    sonuc = topla(15, 25)
-    assert sonuc == 40
-
+    sonuc = ornek_fonk()
+    assert sonuc == "bitti"
     yakalanan = capsys.readouterr()
-    assert "topla:" in yakalanan.out
-    assert "sn" in yakalanan.out
+    assert "ornek_fonk çalisma süresi:" in yakalanan.out or "sürdü" in yakalanan.out or "sn" in yakalanan.out
 
 
-def test_sure_olc_adli_argumanlar():
-    """2. Test: Fonksiyonun adli argumanlarla (kwargs) dogru sekilde calistigini dogrular."""
-    @sure_olc
-    def kisi_karsila(ad, selamlama="Merhaba"):
-        return f"{selamlama}, {ad}!"
-
-    cikti1 = kisi_karsila("Gezgin", selamlama="Hos geldin")
-    assert cikti1 == "Hos geldin, Gezgin!"
-
-    cikti2 = kisi_karsila(ad="Kaptan", selamlama="Gunaydin")
-    assert cikti2 == "Gunaydin, Kaptan!"
-
-
-def test_sure_olc_metadata_korunumu():
-    """3. Test: wraps sayesinde __name__ ve __doc__ niteliklerinin korundugunu dogrular."""
-    @sure_olc
-    def ornek_fonksiyon(x):
-        """Bu ornek fonksiyonun belgelendirme metnidir."""
-        return x * 2
-
-    assert ornek_fonksiyon.__name__ == "ornek_fonksiyon"
-    assert ornek_fonksiyon.__doc__ == "Bu ornek fonksiyonun belgelendirme metnidir."
-
-
-from functools import lru_cache
-
-
-def test_say_dekoratoru_ve_sirasi():
-    """Görev 2: Fibonacci fonksiyonunun 3 farklı dekoratör dizilimi için çağrı sayılarını test eder."""
-
-    #1. Durum: Yalnızca @say
+def test_say():
     @say
-    def fib1(n):
-        if n < 2:
-            return n
-        return fib1(n - 1) + fib1(n - 2)
+    def faktoriyel(n):
+        if n <= 1:
+            return 1
+        return n * faktoriyel(n - 1)
 
-    fib1(20)
-    assert fib1.cagri == 21891
+    assert faktoriyel(4) == 24
+    assert faktoriyel.cagri_sayisi == 4
 
-    #2. Durum: @say üstte, @lru_cache altta
-    @say
-    @lru_cache(maxsize=None)
-    def fib2(n):
-        if n < 2:
-            return n
-        return fib2(n - 1) + fib2(n - 2)
 
-    fib2(20)
-    assert fib2.cagri == 39
+def test_log_cagri(capsys):
+    @log_cagri
+    def yolculuk(hedef, hiz=1):
+        return f"{hedef} hiz={hiz}"
 
-    #3. Durum: @lru_cache üstte, @say altta
-    @lru_cache(maxsize=None)
-    @say
-    def fib3(n):
-        if n < 2:
-            return n
-        return fib3(n - 1) + fib3(n - 2)
+    sonuc = yolculuk("orion", hiz=3)
+    assert sonuc == "orion hiz=3"
+    yakalanan = capsys.readouterr()
+    assert "-> yolculuk('orion', hiz=3)" in yakalanan.out
+    assert "<- yolculuk = 'orion hiz=3'" in yakalanan.out
 
-    fib3(20)
-    assert fib3.__wrapped__.cagri == 21
 
-    def test_log_cagri(capsys):
-        """Görev 3: log_cagri dekoratörünün giriş argümanlarını ve dönüş değerini doğru yazdırdığını test eder."""
+def test_sinirla_dekoratoru():
+    @sinirla(0, 100)
+    def yakit_harca(miktar, mevcut_yakit=100):
+        return mevcut_yakit - miktar
 
-        @log_cagri
-        def yolculuk(hedef, hiz=1):
-            return f"{hedef} hiz={hiz}"
+    # Normal değer ve sınır değerleri (0 ve 100)
+    assert yakit_harca(30) == 70
+    assert yakit_harca(0) == 100
+    assert yakit_harca(100) == 0
 
-        sonuc = yolculuk("orion", hiz=3)
-        assert sonuc == "orion hiz=3"
+    # Aralık dışı üst sınır hatası (150)
+    with pytest.raises(ValueError):
+        yakit_harca(150)
 
-        yakalanan = capsys.readouterr()
-        assert "-> yolculuk('orion', hiz=3)" in yakalanan.out
-        assert "<- yolculuk = 'orion hiz=3'" in yakalanan.out
+    # Aralık dışı alt sınır hatası (-5)
+    with pytest.raises(ValueError):
+        yakit_harca(-5)

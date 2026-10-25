@@ -1,6 +1,5 @@
-import json
+from uzay_oyunu.dekoratorler import log_cagri, sinirla
 from uzay_oyunu.komutlar import KOMUTLAR
-from uzay_oyunu.dekoratorler import log_cagri
 
 def envanter_metni(credits: bool,engines: bool, copilot: bool)->str:
     """Sahip olunan esyaları listeler; hiçbiri yoksa boş metin döndürür."""
@@ -50,7 +49,7 @@ def travel(galaksi: dict, planet: str) -> list[str]:
 
         girdi = input("> ").strip()
 
-        # Girdi bir komutsa (yardim, envanter, harita vb.) calistir ve ayni menuyu tekrar goster
+        #Girdi bir komutsa (yardim, envanter, harita vb.) calistir ve ayni menuyu tekrar goster
         if girdi in KOMUTLAR:
             fonk, _ = KOMUTLAR[girdi]
             durum = {
@@ -64,5 +63,10 @@ def travel(galaksi: dict, planet: str) -> list[str]:
             print(sonuc)
             continue
 
-        # Girdi bir komut degilse, eskisi gibi gezegen secimi olarak komsulari dondur
+        #Girdi bir komut değilse, eskisi gibi gezegen seçimi olarak komşuları dondürür
         return komsular
+
+    @sinirla(0, 100)
+    def yakit_harca(miktar: int, mevcut_yakit: int = 100) -> int:
+        """Belirtilen miktarda yakıt harcar ve kalan yakıtı döner."""
+        return mevcut_yakit - miktar
