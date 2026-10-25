@@ -1,4 +1,5 @@
 import json
+from uzay_oyunu.komutlar import KOMUTLAR
 from uzay_oyunu.dekoratorler import log_cagri
 
 def envanter_metni(credits: bool,engines: bool, copilot: bool)->str:
@@ -37,6 +38,31 @@ def galaksi_kur(gezegenler: list[str], baglantilar: dict[str, list[str]], baslan
         "yakit": yakit,
         **kwargs
     }
+
+
 def travel(galaksi: dict, planet: str) -> list[str]:
-    """Belirtilen gezegenden gidilebilecek bağlantılı gezegenlerin listesini döner."""
-    return galaksi["baglantilar"][planet]
+    """Belirtilen gezegenden gidilebilecek baglantili gezegenlerin listesini doner."""
+    komsular = galaksi["baglantilar"][planet]
+
+    while True:
+        print("\nNereye gitmek istersin?")
+        print(hedef_menusu(komsular))
+
+        girdi = input("> ").strip()
+
+        # Girdi bir komutsa (yardim, envanter, harita vb.) calistir ve ayni menuyu tekrar goster
+        if girdi in KOMUTLAR:
+            fonk, _ = KOMUTLAR[girdi]
+            durum = {
+                "konum": planet,
+                "baglantilar": galaksi.get("baglantilar", {}),
+                "credits": galaksi.get("credits", False),
+                "engines": galaksi.get("engines", False),
+                "copilot": galaksi.get("copilot", False),
+            }
+            sonuc = fonk(durum)
+            print(sonuc)
+            continue
+
+        # Girdi bir komut degilse, eskisi gibi gezegen secimi olarak komsulari dondur
+        return komsular
